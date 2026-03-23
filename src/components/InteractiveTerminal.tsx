@@ -370,7 +370,7 @@ Welcome to Piyush's terminal! 🚀  Type "help" to see available commands.`,
                 className="w-[7px] h-[17px] rounded-[1px]"
                 style={{ backgroundColor: "rgba(255,255,255,0.6)" }}
                 animate={{ opacity: [1, 0, 1] }}
-                transition={{ duration: 1, repeat: Infinity, ease: "steps(2)" }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
               />
             </form>
           </div>
