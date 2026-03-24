@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Epilogue, Manrope } from "next/font/google";
 import "./globals.css";
-
+import Preloader from "@/components/Preloader";
 const epilogue = Epilogue({
   variable: "--font-epilogue",
   subsets: ["latin"],
@@ -43,6 +43,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-surface font-body text-on-surface">
+        <Preloader />
         {children}
       </body>
     </html>

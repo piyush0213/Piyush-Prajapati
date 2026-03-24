@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 const letterVariants = {
   hidden: { y: 100, opacity: 0 },
@@ -8,21 +8,28 @@ const letterVariants = {
     y: 0,
     opacity: 1,
     transition: {
-      delay: 0.5 + i * 0.05,
+      delay: i * 0.05,
       duration: 0.8,
       ease: [0.25, 0.4, 0.25, 1] as [number, number, number, number],
     },
   }),
 };
 
-function AnimatedWord({ word, className }: { word: string; className?: string }) {
+function AnimatedWord({ word, className, delayOffset = 0 }: { word: string; className?: string, delayOffset?: number }) {
   return (
     <span className={`inline-flex overflow-hidden ${className || ""}`}>
       {word.split("").map((char, i) => (
         <motion.span
           key={i}
           custom={i}
-          variants={letterVariants}
+          variants={{
+             hidden: { y: 100, opacity: 0 },
+             visible: (i: number) => ({
+               y: 0,
+               opacity: 1,
+               transition: { delay: delayOffset + i * 0.05, duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }
+             })
+          }}
           initial="hidden"
           animate="visible"
           className="inline-block"
@@ -35,6 +42,19 @@ function AnimatedWord({ word, className }: { word: string; className?: string })
 }
 
 export default function Hero() {
+  const { scrollY } = useScroll();
+
+  // Scatter animations for "damaged" layout effect
+  const leftX = useTransform(scrollY, [0, 600], [0, -200]);
+  const leftY = useTransform(scrollY, [0, 600], [0, -100]);
+  const heroOpacity = useTransform(scrollY, [0, 500], [1, 0]);
+
+  const rightX = useTransform(scrollY, [0, 600], [0, 200]);
+  const rightRotate = useTransform(scrollY, [0, 600], [0, 25]);
+  const rightScale = useTransform(scrollY, [0, 600], [1, 0.8]);
+
+  const particleScatter = useTransform(scrollY, [0, 500], [1, 3]);
+
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-24 overflow-hidden bg-surface">
       {/* Background Gradient */}
@@ -54,6 +74,7 @@ export default function Hero() {
           style={{
             top: `${20 + i * 15}%`,
             left: `${10 + i * 18}%`,
+            scale: particleScatter
           }}
           animate={{
             y: [0, -30, 0],
@@ -71,13 +92,13 @@ export default function Hero() {
       <div className="max-w-[1400px] w-full px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 items-center">
           {/* Left Column */}
-          <div className="lg:col-span-8 z-20">
+          <motion.div className="lg:col-span-8 z-20" style={{ x: leftX, y: leftY, opacity: heroOpacity }}>
             {/* Available Badge */}
             <motion.div
               className="overflow-hidden mb-4"
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              transition={{ duration: 0.6, delay: 3.6 }}
             >
               <span className="inline-flex items-center gap-2 font-label text-primary font-bold tracking-[0.4em] uppercase text-sm">
                 <motion.span
@@ -92,10 +113,10 @@ export default function Hero() {
             {/* Name */}
             <h1 className="font-headline text-[12vw] lg:text-[10vw] leading-[0.85] font-extrabold tracking-tighter text-on-surface uppercase mb-8">
               <div className="overflow-hidden">
-                <AnimatedWord word="PIYUSH" />
+                <AnimatedWord word="PIYUSH" delayOffset={3.8} />
               </div>
               <div className="overflow-hidden">
-                <AnimatedWord word="PRAJAPATI" className="hero-text-outline" />
+                <AnimatedWord word="PRAJAPATI" className="hero-text-outline" delayOffset={4.1} />
               </div>
             </h1>
 
@@ -104,7 +125,7 @@ export default function Hero() {
               className="max-w-2xl"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.2 }}
+              transition={{ duration: 0.8, delay: 4.5 }}
             >
               <p className="text-xl md:text-3xl text-on-surface-variant font-body leading-tight mb-8">
                 Second-year Computer Science Engineering student at Chitkara
@@ -123,21 +144,24 @@ export default function Hero() {
                   className="editorial-line w-24"
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.8, delay: 1.6 }}
+                  transition={{ duration: 0.8, delay: 4.8 }}
                   style={{ transformOrigin: "left" }}
                 />
               </div>
             </motion.div>
-          </div>
+          </motion.div>
 
           {/* Right Column - Portrait */}
           <motion.div
             className="lg:col-span-4 mt-12 lg:mt-0 relative"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.6 }}
+            style={{ x: rightX, rotate: rightRotate, scale: rightScale, opacity: heroOpacity }}
           >
-            <div className="relative group">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 4.0 }}
+            >
+              <div className="relative group">
               <motion.div
                 className="absolute -inset-4 border border-primary/20"
                 animate={{ scale: [1.05, 1.08, 1.05] }}
@@ -155,7 +179,7 @@ export default function Hero() {
                 className="absolute -bottom-6 -left-6 bg-surface p-6 border border-outline-variant/30 hidden md:block"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1.4 }}
+                transition={{ duration: 0.6, delay: 4.4 }}
               >
                 <div className="w-20 h-20 bg-white flex items-center justify-center">
                   <span className="material-symbols-outlined text-surface text-4xl">
@@ -166,7 +190,8 @@ export default function Hero() {
                   Connect
                 </p>
               </motion.div>
-            </div>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>
